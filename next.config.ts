@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  outputFileTracingRoot: "C:/Users/ProUser/OneDrive/Desktop/coupon-dashboard",
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
