@@ -1,12 +1,10 @@
 import { Coupon, CreateCouponInput, UpdateCouponInput } from "./coupon.types";
 
 export class CouponService {
-  createCoupon(input: CreateCouponInput): Omit<Coupon, "id" | "createdAt" | "totalUsageCount"> {
-    return {
-      ...input,
-      businessId: "", // Set by the caller
-      totalUsageCount: 0,
-    };
+  // The API assigns id, createdAt, totalUsageCount and resolves the business
+  // from `businessName`, so the create payload is just the validated input.
+  createCoupon(input: CreateCouponInput): CreateCouponInput {
+    return { ...input };
   }
 
   updateCoupon(coupon: Coupon, updates: UpdateCouponInput): Coupon {

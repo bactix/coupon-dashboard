@@ -50,10 +50,10 @@ import { PlusIcon, PencilIcon, TrashIcon } from "lucide-react";
 const couponSchema = z.object({
   code: z.string().min(1, "Coupon code is required"),
   businessName: z.string().min(1, "Business is required"),
-  discount: z.coerce.number().min(0, "Discount must be at least 0").max(100, "Discount cannot exceed 100"),
+  discount: z.number().min(0, "Discount must be at least 0").max(100, "Discount cannot exceed 100"),
   description: z.string().min(1, "Description is required"),
   expiryDate: z.string().min(1, "Expiry date is required"),
-  maxUsagePerUser: z.coerce.number().min(1, "Max usage must be at least 1"),
+  maxUsagePerUser: z.number().min(1, "Max usage must be at least 1"),
 });
 
 type CouponFormValues = z.infer<typeof couponSchema>;
