@@ -1,0 +1,26 @@
+{
+  "users": [
+    {
+      "id": "admin",
+      "name": "Admin User",
+      "email": "admin@gmail.com",
+      "password": "12345678",
+      "phone": "+961 1 234 5678",
+      "userType": "super_admin",
+      "createdAt": "2025-02-01T08:00:00Z",
+      "startDate": "2025-02-01T08:00:00Z",
+      "expiryDate": "2026-02-01T08:00:00Z"
+    },
+    {
+      "id": "owner",
+      "name": "Business Owner",
+      "email": "owner@gmail.com",
+      "password": "12345678",
+      "phone": "+961 3 987 6543",
+      "userType": "business_owner",
+      "createdAt": "2025-02-15T10:30:00Z",
+      "startDate": "2025-02-15T10:30:00Z",
+      "expiryDate": "2026-02-15T10:30:00Z"
+    }
+  ]
+}

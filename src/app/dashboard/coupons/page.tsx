@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -33,13 +33,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -50,164 +43,105 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { PlusIcon, PencilIcon, TrashIcon, PlusCircleIcon } from "lucide-react";
+import { useCouponManager } from "@/features/coupons/hooks/useCouponManager";
+import { useBusinessManager } from "@/features/businesses/hooks/useBusinessManager";
+import { PlusIcon, PencilIcon, TrashIcon } from "lucide-react";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
-type DiscountType = "percentage" | "fixed";
-
-interface Coupon {
-  id: string;
-  code: string;
-  discount: number;
-  discountType: DiscountType;
-  maxUses: number;
-  usedCount: number;
-  userId: string;
-  expiresAt: string;
-  createdAt: string;
-}
-
-interface AppUser {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  city: string;
-  role: string;
-}
-
-// ── Zod schema ───────────────────────────────────────────────────────────────
-
-const schema = z.object({
+const couponSchema = z.object({
   code: z.string().min(1, "Coupon code is required"),
-  discount: z.number().min(0.01, "Discount must be greater than 0"),
-  discountType: z.enum(["percentage", "fixed"] as const),
-  maxUses: z.number().int().min(1, "Must allow at least 1 use"),
-  userId: z.string().min(1, "Please link this coupon to a user"),
-  expiresAt: z.string().min(1, "Expiry date is required"),
+  businessName: z.string().min(1, "Business is required"),
+  discount: z.coerce.number().min(0, "Discount must be at least 0").max(100, "Discount cannot exceed 100"),
+  description: z.string().min(1, "Description is required"),
+  expiryDate: z.string().min(1, "Expiry date is required"),
+  maxUsagePerUser: z.coerce.number().min(1, "Max usage must be at least 1"),
 });
 
-type FormValues = z.infer<typeof schema>;
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function deriveStatus(coupon: Coupon): "active" | "exhausted" | "expired" {
-  if (coupon.usedCount >= coupon.maxUses) return "exhausted";
-  if (new Date(coupon.expiresAt) < new Date()) return "expired";
-  return "active";
-}
-
-const statusVariant: Record<
-  "active" | "exhausted" | "expired",
-  "default" | "secondary" | "destructive"
-> = {
-  active: "default",
-  exhausted: "secondary",
-  expired: "destructive",
-};
-
-function formatDiscount(coupon: Coupon) {
-  return coupon.discountType === "percentage"
-    ? `${coupon.discount}%`
-    : `$${coupon.discount}`;
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
+type CouponFormValues = z.infer<typeof couponSchema>;
 
 export default function CouponsPage() {
-  const [coupons, setCoupons] = useLocalStorage<Coupon[]>("coupons", []);
-  const [users] = useLocalStorage<AppUser[]>("app-users", []);
+  const { coupons, isLoading, initializeCoupons, addCoupon, updateCoupon, deleteCoupon } = useCouponManager();
+  const { businesses, initializeBusinesses } = useBusinessManager();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [editing, setEditing] = useState<Coupon | null>(null);
+  const [editing, setEditing] = useState<(typeof coupons)[0] | null>(null);
 
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
-    watch,
     formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: { discountType: "percentage" },
+  } = useForm<CouponFormValues>({
+    resolver: zodResolver(couponSchema),
   });
 
-  const discountTypeValue = watch("discountType");
-  const userIdValue = watch("userId");
+  useEffect(() => {
+    const loadData = async () => {
+      await Promise.all([initializeCoupons(), initializeBusinesses()]);
+    };
+    loadData();
+  }, [initializeCoupons, initializeBusinesses]);
+
+  function getDefaultExpiryDate() {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+    return date.toISOString().split("T")[0];
+  }
 
   function openCreate() {
     setEditing(null);
     reset({
       code: "",
-      discount: undefined,
-      discountType: "percentage",
-      maxUses: undefined,
-      userId: "",
-      expiresAt: "",
+      businessName: "",
+      discount: 10,
+      description: "",
+      expiryDate: getDefaultExpiryDate(),
+      maxUsagePerUser: 1,
     });
     setDialogOpen(true);
   }
 
-  function openEdit(c: Coupon) {
+  function openEdit(c: (typeof coupons)[0]) {
     setEditing(c);
     reset({
       code: c.code,
+      businessName: businesses.find((b) => b.id === c.businessId)?.name ?? "",
       discount: c.discount,
-      discountType: c.discountType,
-      maxUses: c.maxUses,
-      userId: c.userId,
-      expiresAt: c.expiresAt,
+      description: c.description,
+      expiryDate: c.expiryDate,
+      maxUsagePerUser: c.maxUsagePerUser,
     });
     setDialogOpen(true);
   }
 
-  function onSubmit(values: FormValues) {
-    const code = values.code.toUpperCase();
-    if (editing) {
-      setCoupons((prev) =>
-        prev.map((c) =>
-          c.id === editing.id ? { ...c, ...values, code } : c
-        )
-      );
-    } else {
-      setCoupons((prev) => [
-        {
-          id: Math.random().toString(36).slice(2),
-          ...values,
-          code,
-          usedCount: 0,
-          createdAt: new Date().toISOString(),
-        },
-        ...prev,
-      ]);
+  async function onSubmit(values: CouponFormValues) {
+    try {
+      if (editing) {
+        await updateCoupon(editing.id, {
+          description: values.description,
+          expiryDate: values.expiryDate,
+          maxUsagePerUser: values.maxUsagePerUser,
+        });
+      } else {
+        await addCoupon(values);
+      }
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to save coupon:", error);
     }
-    setDialogOpen(false);
   }
 
-  function incrementUse(id: string) {
-    setCoupons((prev) =>
-      prev.map((c) =>
-        c.id === id && c.usedCount < c.maxUses
-          ? { ...c, usedCount: c.usedCount + 1 }
-          : c
-      )
-    );
-  }
-
-  function confirmDelete() {
+  async function confirmDelete() {
     if (deleteId) {
-      setCoupons((prev) => prev.filter((c) => c.id !== deleteId));
-      setDeleteId(null);
+      try {
+        await deleteCoupon(deleteId);
+        setDeleteId(null);
+      } catch (error) {
+        console.error("Failed to delete coupon:", error);
+      }
     }
   }
 
-  function getUserName(userId: string) {
-    const u = users.find((u) => u.id === userId);
-    return u ? u.name : <span className="text-muted-foreground italic">Unknown user</span>;
-  }
+  const isExpired = (expiryDate: string) => new Date(expiryDate) < new Date();
 
   return (
     <SidebarInset>
@@ -237,10 +171,10 @@ export default function CouponsPage() {
           <div>
             <h1 className="text-2xl font-bold">Coupons</h1>
             <p className="text-sm text-muted-foreground">
-              Manage coupons, track usage, and link them to users
+              Manage discount coupons
             </p>
           </div>
-          <Button onClick={openCreate}>
+          <Button onClick={openCreate} disabled={isLoading}>
             <PlusIcon className="mr-2 h-4 w-4" />
             Add Coupon
           </Button>
@@ -252,59 +186,45 @@ export default function CouponsPage() {
               <TableRow>
                 <TableHead>Code</TableHead>
                 <TableHead>Discount</TableHead>
-                <TableHead>Linked User</TableHead>
-                <TableHead>Uses</TableHead>
+                <TableHead>Max Uses</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Expires</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {coupons.length === 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-10">
+                    Loading coupons...
+                  </TableCell>
+                </TableRow>
+              ) : coupons.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={6}
                     className="text-center py-10 text-muted-foreground"
                   >
-                    No coupons yet. Click &quot;Add Coupon&quot; to get started.
+                    No coupons yet. Click "Add Coupon" to get started.
                   </TableCell>
                 </TableRow>
               ) : (
                 coupons.map((c) => {
-                  const status = deriveStatus(c);
-                  const canIncrement = status === "active";
+                  const expired = isExpired(c.expiryDate);
                   return (
                     <TableRow key={c.id}>
-                      <TableCell className="font-mono font-semibold tracking-wide">
+                      <TableCell className="font-mono font-semibold">
                         {c.code}
                       </TableCell>
-                      <TableCell>{formatDiscount(c)}</TableCell>
-                      <TableCell>{getUserName(c.userId)}</TableCell>
+                      <TableCell>{c.discount}%</TableCell>
+                      <TableCell>{c.maxUsagePerUser}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span className="tabular-nums">
-                            {c.usedCount}{" "}
-                            <span className="text-muted-foreground">/ {c.maxUses}</span>
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            disabled={!canIncrement}
-                            title="Record one use"
-                            onClick={() => incrementUse(c.id)}
-                          >
-                            <PlusCircleIcon className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={statusVariant[status]} className="capitalize">
-                          {status}
+                        <Badge variant={expired ? "destructive" : "default"}>
+                          {expired ? "Expired" : "Active"}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {new Date(c.expiresAt).toLocaleDateString("en-GB")}
+                        {new Date(c.expiryDate).toLocaleDateString("en-GB")}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
@@ -312,6 +232,7 @@ export default function CouponsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => openEdit(c)}
+                            disabled={isLoading}
                           >
                             <PencilIcon className="h-4 w-4" />
                           </Button>
@@ -320,6 +241,7 @@ export default function CouponsPage() {
                             size="icon"
                             className="text-destructive hover:text-destructive"
                             onClick={() => setDeleteId(c.id)}
+                            disabled={isLoading}
                           >
                             <TrashIcon className="h-4 w-4" />
                           </Button>
@@ -341,14 +263,12 @@ export default function CouponsPage() {
             <DialogTitle>{editing ? "Edit Coupon" : "Add Coupon"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
-            {/* Code */}
             <div className="space-y-1">
               <Label htmlFor="code">Coupon Code</Label>
               <Input
                 id="code"
-                placeholder="e.g. BEIRUT20"
-                className="uppercase"
+                placeholder="e.g. SAVE20"
+                disabled={!!editing}
                 {...register("code")}
               />
               {errors.code && (
@@ -356,113 +276,81 @@ export default function CouponsPage() {
               )}
             </div>
 
-            {/* Discount */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="discount">Discount Value</Label>
-                <Input
-                  id="discount"
-                  type="number"
-                  min={0}
-                  step={0.01}
-                  placeholder="e.g. 20"
-                  {...register("discount", { valueAsNumber: true })}
-                />
-                {errors.discount && (
-                  <p className="text-xs text-destructive">{errors.discount.message}</p>
-                )}
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="discountType">Type</Label>
-                <Select
-                  value={discountTypeValue}
-                  onValueChange={(v) => setValue("discountType", v as DiscountType)}
-                >
-                  <SelectTrigger id="discountType">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="percentage">Percentage (%)</SelectItem>
-                    <SelectItem value="fixed">Fixed ($)</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.discountType && (
-                  <p className="text-xs text-destructive">{errors.discountType.message}</p>
-                )}
-              </div>
+            <div className="space-y-1">
+              <Label htmlFor="businessName">Business Name</Label>
+              <Input
+                id="businessName"
+                placeholder="e.g. Joe's Cafe"
+                disabled={!!editing}
+                {...register("businessName")}
+              />
+              {errors.businessName && (
+                <p className="text-xs text-destructive">{errors.businessName.message}</p>
+              )}
             </div>
 
-            {/* Max uses */}
             <div className="space-y-1">
-              <Label htmlFor="maxUses">Max Allowed Uses</Label>
+              <Label htmlFor="discount">Discount (%)</Label>
               <Input
-                id="maxUses"
+                id="discount"
+                type="number"
+                min={0}
+                max={100}
+                step={1}
+                {...register("discount", { valueAsNumber: true })}
+              />
+              {errors.discount && (
+                <p className="text-xs text-destructive">{errors.discount.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="maxUsagePerUser">Max Uses Per User</Label>
+              <Input
+                id="maxUsagePerUser"
                 type="number"
                 min={1}
                 step={1}
-                placeholder="e.g. 100"
-                {...register("maxUses", { valueAsNumber: true })}
+                {...register("maxUsagePerUser", { valueAsNumber: true })}
               />
-              {errors.maxUses && (
-                <p className="text-xs text-destructive">{errors.maxUses.message}</p>
+              {errors.maxUsagePerUser && (
+                <p className="text-xs text-destructive">{errors.maxUsagePerUser.message}</p>
               )}
             </div>
 
-            {/* Linked user */}
             <div className="space-y-1">
-              <Label htmlFor="userId">Linked User</Label>
-              {users.length === 0 ? (
-                <p className="text-xs text-muted-foreground border rounded-md px-3 py-2">
-                  No users found. Add a user first in the Users page.
-                </p>
-              ) : (
-                <Select
-                  value={userIdValue ?? ""}
-                  onValueChange={(v) => setValue("userId", v ?? "")}
-                >
-                  <SelectTrigger id="userId">
-                    <SelectValue placeholder="Select user" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users.map((u) => (
-                      <SelectItem key={u.id} value={u.id}>
-                        {u.name}
-                        <span className="ml-2 text-xs text-muted-foreground">
-                          — {u.email}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {errors.userId && (
-                <p className="text-xs text-destructive">{errors.userId.message}</p>
+              <Label htmlFor="description">Description</Label>
+              <textarea
+                id="description"
+                placeholder="Describe this coupon..."
+                className="w-full px-3 py-2 border rounded-md text-sm"
+                rows={3}
+                {...register("description")}
+              />
+              {errors.description && (
+                <p className="text-xs text-destructive">{errors.description.message}</p>
               )}
             </div>
 
-            {/* Expiry date */}
             <div className="space-y-1">
-              <Label htmlFor="expiresAt">Expiry Date</Label>
-              <Input id="expiresAt" type="date" {...register("expiresAt")} />
-              {errors.expiresAt && (
-                <p className="text-xs text-destructive">{errors.expiresAt.message}</p>
+              <Label htmlFor="expiryDate">Expiry Date</Label>
+              <Input
+                id="expiryDate"
+                type="date"
+                {...register("expiryDate")}
+              />
+              {errors.expiryDate && (
+                <p className="text-xs text-destructive">{errors.expiryDate.message}</p>
               )}
             </div>
-
-            {/* Show current usedCount when editing */}
-            {editing && (
-              <p className="text-sm text-muted-foreground rounded-md border px-3 py-2">
-                Times used so far:{" "}
-                <span className="font-semibold text-foreground">{editing.usedCount}</span>
-                {" "}(use the <PlusCircleIcon className="inline h-3.5 w-3.5" /> button in the table to record a use)
-              </p>
-            )}
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">{editing ? "Save Changes" : "Add Coupon"}</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Saving..." : editing ? "Save Changes" : "Add Coupon"}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -474,7 +362,7 @@ export default function CouponsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Coupon</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. The coupon and its usage history will be permanently removed.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

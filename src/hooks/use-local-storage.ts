@@ -6,7 +6,18 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     if (typeof window === "undefined") return initialValue;
     try {
       const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
+      if (!item) return initialValue;
+      const parsed = JSON.parse(item) as T;
+      // If stored value is an empty array but we have seed data, use seed data
+      if (
+        Array.isArray(parsed) &&
+        parsed.length === 0 &&
+        Array.isArray(initialValue) &&
+        (initialValue as unknown[]).length > 0
+      ) {
+        return initialValue;
+      }
+      return parsed;
     } catch {
       return initialValue;
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { NavLinks } from "@/components/nav-links";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -14,28 +15,33 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  LayoutDashboardIcon,
   BuildingIcon,
   UsersIcon,
   TagIcon,
   TicketIcon,
 } from "lucide-react";
 import Link from "next/link";
-
-const user = {
-  name: "Admin",
-  email: "admin@coupons.com",
-  avatar: "",
-};
+import { getStoredUser } from "@/lib/auth";
+import type { AuthUser } from "@/lib/auth";
 
 const navItems = [
-  { title: "Overview", url: "/dashboard", icon: <LayoutDashboardIcon /> },
-  { title: "Businesses", url: "/dashboard/businesses", icon: <BuildingIcon /> },
   { title: "Users", url: "/dashboard/users", icon: <UsersIcon /> },
+  { title: "Businesses", url: "/dashboard/businesses", icon: <BuildingIcon /> },
   { title: "Coupons", url: "/dashboard/coupons", icon: <TicketIcon /> },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    const user = getStoredUser();
+    setCurrentUser(user);
+  }, []);
+
+  const displayUser = currentUser && "name" in currentUser
+    ? { name: currentUser.name, email: currentUser.email, avatar: "" }
+    : { name: "User", email: "", avatar: "" };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -46,7 +52,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <TagIcon className="size-4" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">Coupon Dashboard</span>
+                <span className="font-semibold">MyLebPass</span>
                 <span className="text-xs text-muted-foreground">Management</span>
               </div>
             </SidebarMenuButton>
@@ -57,7 +63,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavLinks label="Menu" items={navItems} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={displayUser} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

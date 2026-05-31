@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SeedProvider } from "@/components/seed-provider";
+import { HydrationBoundary } from "@/components/hydration-boundary";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Coupon Dashboard",
-  description: "Coupon management dashboard",
+  title: "MyLebPass",
+  description: "MyLebPass - Pass management system",
 };
 
 export default function RootLayout({
@@ -29,7 +31,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <HydrationBoundary>
+          <TooltipProvider>
+            <SeedProvider>{children}</SeedProvider>
+          </TooltipProvider>
+        </HydrationBoundary>
       </body>
     </html>
   );
