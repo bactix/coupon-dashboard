@@ -23,6 +23,9 @@ export interface Business {
   phone: string;
   ownerName: string;
   city: LebanesCity;
+  address: string;
+  about: string;
+  discount: number;
   createdAt: string;
   businessModel: BusinessModel;
   usageLimit?: number;

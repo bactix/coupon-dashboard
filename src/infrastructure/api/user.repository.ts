@@ -52,9 +52,10 @@ export class ApiUserRepository implements IUserRepository {
     });
   }
 
-  async renew(id: string): Promise<AppUser> {
+  async renew(id: string, expiryDate?: string): Promise<AppUser> {
     return apiRequest<AppUser>(`/api/dashboard/users/${id}/renew`, {
       method: "POST",
+      body: JSON.stringify(expiryDate ? { expiryDate } : {}),
     });
   }
 }

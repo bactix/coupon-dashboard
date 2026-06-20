@@ -25,6 +25,7 @@ export interface UpdateUserInput {
   email?: string;
   password?: string;
   phone?: string;
+  startDate?: string;
 }
 
 export interface UserFilters {

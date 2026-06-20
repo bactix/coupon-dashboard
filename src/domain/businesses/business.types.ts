@@ -23,6 +23,9 @@ export interface Business {
   phone: string;
   ownerName: string;
   city: LebanesCity;
+  address: string;
+  about: string;
+  discount: number;
   createdAt: string;
   businessModel: BusinessModel;
   usageLimit?: number;
@@ -36,6 +39,9 @@ export interface CreateBusinessInput {
   phone: string;
   ownerName: string;
   city: LebanesCity;
+  address: string;
+  about: string;
+  discount: number;
   businessModel: BusinessModel;
   usageLimit?: number;
 }
@@ -48,6 +54,9 @@ export interface UpdateBusinessInput {
   phone?: string;
   ownerName?: string;
   city?: LebanesCity;
+  address?: string;
+  about?: string;
+  discount?: number;
   businessModel?: BusinessModel;
   usageLimit?: number;
 }

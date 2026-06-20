@@ -27,6 +27,41 @@ export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY);
 }
 
+/**
+ * Decodes a JWT payload without verifying its signature (which can only happen
+ * server-side). Returns null if the token is malformed.
+ */
+function decodeTokenPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(base64);
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Returns true only when a well-formed, unexpired token is stored. Used to gate
+ * access to the dashboard so expired/tampered tokens send the user to login.
+ */
+export function isTokenValid(): boolean {
+  const token = getToken();
+  if (!token) return false;
+
+  const payload = decodeTokenPayload(token);
+  if (!payload) return false;
+
+  const exp = payload.exp;
+  if (typeof exp === "number" && Date.now() >= exp * 1000) {
+    return false;
+  }
+
+  return true;
+}
+
 export interface Pagination {
   page: number;
   limit: number;
@@ -61,6 +96,20 @@ async function rawRequest(path: string, options?: RequestInit): Promise<any> {
     } catch {
       body = null;
     }
+
+    // If the server rejects our token, drop it and send the user to login.
+    // Only do this when a token was actually sent, so failed login attempts
+    // (which have no token yet) still surface their error message normally.
+    if (
+      (response.status === 401 || response.status === 403) &&
+      token &&
+      typeof window !== "undefined"
+    ) {
+      clearToken();
+      localStorage.removeItem("currentUser");
+      window.location.href = "/login";
+    }
+
     const message = body?.error || response.statusText;
     throw new ApiError(response.status, message, body);
   }

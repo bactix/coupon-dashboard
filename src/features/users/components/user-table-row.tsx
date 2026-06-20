@@ -5,13 +5,14 @@ import { AppUser } from "@/types/user";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { CalendarClockIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { CalendarClockIcon, KeyIcon, PencilIcon, TrashIcon } from "lucide-react";
 
 interface UserTableRowProps {
   user: AppUser;
   onEdit: (user: AppUser) => void;
   onDelete: (userId: string) => void;
   onRenew: (user: AppUser) => void;
+  onChangePassword: (user: AppUser) => void;
 }
 
 export const UserTableRow = memo(function UserTableRow({
@@ -19,6 +20,7 @@ export const UserTableRow = memo(function UserTableRow({
   onEdit,
   onDelete,
   onRenew,
+  onChangePassword,
 }: UserTableRowProps) {
   const fmt = (iso?: string) => {
     if (!iso) return "—";
@@ -51,6 +53,15 @@ export const UserTableRow = memo(function UserTableRow({
             title={`Renew ${user.name}`}
           >
             <CalendarClockIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onChangePassword(user)}
+            aria-label={`Change password for ${user.name}`}
+            title={`Change password for ${user.name}`}
+          >
+            <KeyIcon className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"

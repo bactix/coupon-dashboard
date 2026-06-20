@@ -1,6 +1,9 @@
 import { Business, CreateBusinessInput, UpdateBusinessInput, BusinessModel } from "./business.types";
 import { generateId } from "@/lib/id-generator";
 
+/** Fixed number of uses granted to every "limited" business. */
+export const LIMITED_USAGE_LIMIT = 12;
+
 export class BusinessService {
   /**
    * Creates a new business with business model configuration
@@ -11,7 +14,7 @@ export class BusinessService {
     return {
       id: generateId(),
       ...input,
-      usageLimit: input.businessModel === "limited" ? input.usageLimit : undefined,
+      usageLimit: input.businessModel === "limited" ? LIMITED_USAGE_LIMIT : undefined,
       createdAt: now.toISOString(),
     };
   }
@@ -23,22 +26,18 @@ export class BusinessService {
     return {
       ...business,
       ...updates,
-      usageLimit: updates.businessModel === "limited" ? updates.usageLimit : undefined,
+      usageLimit: updates.businessModel === "limited" ? LIMITED_USAGE_LIMIT : undefined,
     };
   }
 
   /**
    * Changes business model from unlimited to limited or vice versa
    */
-  changBusinessModel(
-    business: Business,
-    newModel: BusinessModel,
-    usageLimit?: number
-  ): Business {
+  changBusinessModel(business: Business, newModel: BusinessModel): Business {
     return {
       ...business,
       businessModel: newModel,
-      usageLimit: newModel === "limited" ? usageLimit : undefined,
+      usageLimit: newModel === "limited" ? LIMITED_USAGE_LIMIT : undefined,
     };
   }
 
@@ -63,8 +62,6 @@ export class BusinessService {
     if (!input.phone?.match(/^\+961\s?\d[\s\d]{6,9}$/))
       errors.push("Valid Lebanese phone number required");
     if (!input.ownerName?.trim()) errors.push("Owner name is required");
-    if (input.businessModel === "limited" && !input.usageLimit)
-      errors.push("Usage limit required for limited model");
 
     return { valid: errors.length === 0, errors };
   }

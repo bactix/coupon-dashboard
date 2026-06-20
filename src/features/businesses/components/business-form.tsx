@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Select,
@@ -13,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BusinessFormValues, businessSchema } from "@/lib/schemas";
+import { LIMITED_USAGE_LIMIT } from "@/domain/businesses/business.service";
 import { LEBANESE_CITIES, BUSINESS_TYPES } from "@/lib/constants";
 import { BUSINESS_TYPE_LABELS, BUSINESS_FORM_DEFAULTS } from "@/features/businesses/constants";
 import { FormField } from "./form-field";
@@ -47,6 +49,9 @@ export function BusinessForm({
         phone: BUSINESS_FORM_DEFAULTS.phone,
         ownerName: "",
         city: BUSINESS_FORM_DEFAULTS.city,
+        address: "",
+        about: "",
+        discount: 0,
       },
       ...defaultValues,
     },
@@ -152,6 +157,20 @@ export function BusinessForm({
       </FormField>
 
       <FormField
+        id="address"
+        label="Address"
+        error={errors.address}
+        required
+      >
+        <Input
+          id="address"
+          placeholder="e.g. Hamra Street, Building 12"
+          disabled={isLoading}
+          {...register("address")}
+        />
+      </FormField>
+
+      <FormField
         id="phone"
         label="Phone Number"
         error={errors.phone}
@@ -182,6 +201,37 @@ export function BusinessForm({
       </FormField>
 
       <FormField
+        id="about"
+        label="About"
+        error={errors.about}
+        required
+      >
+        <Textarea
+          id="about"
+          placeholder="Short description of the business"
+          disabled={isLoading}
+          {...register("about")}
+        />
+      </FormField>
+
+      <FormField
+        id="discount"
+        label="Discount (%)"
+        error={errors.discount}
+        required
+      >
+        <Input
+          id="discount"
+          type="number"
+          min={0}
+          max={100}
+          placeholder="e.g. 20"
+          disabled={isLoading}
+          {...register("discount", { valueAsNumber: true })}
+        />
+      </FormField>
+
+      <FormField
         id="businessModel"
         label="Business Model"
         error={errors.businessModel}
@@ -191,7 +241,7 @@ export function BusinessForm({
           value={businessModelValue}
           onValueChange={(value) => {
             setValue("businessModel", value as "unlimited" | "limited");
-            if (value === "unlimited") setValue("usageLimit", undefined);
+            setValue("usageLimit", value === "limited" ? LIMITED_USAGE_LIMIT : undefined);
           }}
           disabled={isLoading}
         >
@@ -206,21 +256,10 @@ export function BusinessForm({
       </FormField>
 
       {businessModelValue === "limited" && (
-        <FormField
-          id="usageLimit"
-          label="Number of Uses"
-          error={errors.usageLimit}
-          required
-        >
-          <Input
-            id="usageLimit"
-            type="number"
-            min={1}
-            placeholder="e.g. 100"
-            disabled={isLoading}
-            {...register("usageLimit", { valueAsNumber: true })}
-          />
-        </FormField>
+        <p className="text-sm text-muted-foreground">
+          Limited businesses are granted{" "}
+          <strong>{LIMITED_USAGE_LIMIT} uses</strong>.
+        </p>
       )}
 
       <Button type="submit" disabled={isLoading} className="w-full">

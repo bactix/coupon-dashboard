@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { useBusinessManager } from "@/features/businesses/hooks/useBusinessManager";
 import { useBusinessForm } from "@/features/businesses/hooks/use-business-form";

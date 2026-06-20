@@ -15,7 +15,12 @@ export function useAccount() {
   const currentUser = getCurrentUser();
 
   const updateAccount = useCallback(
-    async (email: string, password: string) => {
+    async (data: {
+      name: string;
+      email: string;
+      phone: string;
+      password?: string;
+    }) => {
       setIsLoading(true);
       setError(null);
       setSuccess(false);
@@ -26,11 +31,21 @@ export function useAccount() {
           return;
         }
 
-          const updated = await apiRequest<AppUser>(
+        const body: Record<string, string> = {
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+        };
+        // Only send the password when the user actually entered a new one.
+        if (data.password) {
+          body.password = data.password;
+        }
+
+        const updated = await apiRequest<AppUser>(
           `/api/dashboard/users/${currentUser.id}`,
           {
             method: "PUT",
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify(body),
           }
         );
 

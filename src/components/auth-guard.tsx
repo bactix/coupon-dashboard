@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getToken } from "@/lib/api-client";
+import { isTokenValid, clearToken } from "@/lib/api-client";
+import { clearStoredUser } from "@/lib/auth";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -14,9 +15,11 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      router.push("/login");
+    if (!isTokenValid()) {
+      // Clear any expired/tampered token so it can't linger, then bounce to login.
+      clearToken();
+      clearStoredUser();
+      router.replace("/login");
       setIsAuthed(false);
     } else {
       setIsAuthed(true);

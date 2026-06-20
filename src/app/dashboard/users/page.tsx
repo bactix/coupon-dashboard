@@ -10,6 +10,7 @@ import { UserTable } from "@/features/users/components/user-table";
 import { UserFormDialog } from "@/features/users/components/user-form-dialog";
 import { UserDeleteDialog } from "@/features/users/components/user-delete-dialog";
 import { UserRenewalDialog } from "@/features/users/components/user-renewal-dialog";
+import { UserChangePasswordDialog } from "@/features/users/components/user-change-password-dialog";
 
 export default function UsersPage() {
   const {
@@ -40,6 +41,7 @@ export default function UsersPage() {
 
   const {
     isDialogOpen,
+    editingUser,
     openCreateDialog,
     openEditDialog,
     closeDialog,
@@ -60,6 +62,7 @@ export default function UsersPage() {
   const deletingUser = deleteId ? getUserById(deleteId) : null;
 
   const [renewalUser, setRenewalUser] = useState<User | null>(null);
+  const [changePasswordUser, setChangePasswordUser] = useState<User | null>(null);
 
   const handleDelete = async () => {
     if (deleteId) {
@@ -68,10 +71,17 @@ export default function UsersPage() {
     }
   };
 
-  const handleRenewal = async () => {
+  const handleRenewal = async (expiryDate: string) => {
     if (renewalUser) {
-      await renewUser(renewalUser.id);
+      await renewUser(renewalUser.id, expiryDate);
       setRenewalUser(null);
+    }
+  };
+
+  const handleChangePassword = async (password: string) => {
+    if (changePasswordUser) {
+      await updateUser(changePasswordUser.id, { password });
+      setChangePasswordUser(null);
     }
   };
 
@@ -93,6 +103,7 @@ export default function UsersPage() {
             onEdit={openEditDialog}
             onDelete={setDeleteId}
             onRenew={setRenewalUser}
+            onChangePassword={setChangePasswordUser}
             currentPage={currentPage}
             totalPages={totalPages}
             totalItems={totalItems}
@@ -106,6 +117,7 @@ export default function UsersPage() {
       </div>
 
       <UserFormDialog
+        key={editingUser?.id ?? "create"}
         open={isDialogOpen}
         onOpenChange={closeDialog}
         onSubmit={handleFormSubmit}
@@ -125,7 +137,14 @@ export default function UsersPage() {
         onOpenChange={(open) => { if (!open) setRenewalUser(null); }}
         onConfirm={handleRenewal}
         userName={renewalUser?.name}
-        currentExpiryDate={renewalUser?.expiryDate}
+        startDate={renewalUser?.startDate}
+      />
+
+      <UserChangePasswordDialog
+        open={!!changePasswordUser}
+        onOpenChange={(open) => { if (!open) setChangePasswordUser(null); }}
+        onConfirm={handleChangePassword}
+        userName={changePasswordUser?.name}
       />
     </SidebarInset>
   );

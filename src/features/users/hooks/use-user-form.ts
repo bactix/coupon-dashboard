@@ -8,6 +8,13 @@ interface UseUserFormProps {
   onSubmit: (values: UserFormValues, isEditing: boolean, id?: string) => Promise<void>;
 }
 
+/** Formats an ISO date string as the `YYYY-MM-DD` value an `<input type="date">` expects. */
+function toDateInputValue(iso: string): string {
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+}
+
 export function useUserForm({ onSubmit }: UseUserFormProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -40,9 +47,11 @@ export function useUserForm({ onSubmit }: UseUserFormProps) {
       return {
         name: editingUser.name,
         email: editingUser.email,
-        password: editingUser.password,
-        phone: editingUser.phone,
+        phone: editingUser.phone.startsWith("+")
+          ? editingUser.phone.replace(/^\+\d{1,4}\s?/, "")
+          : editingUser.phone,
         status: editingUser.status,
+        startDate: toDateInputValue(editingUser.startDate),
       };
     }
 
@@ -50,7 +59,7 @@ export function useUserForm({ onSubmit }: UseUserFormProps) {
       name: "",
       email: "",
       password: "",
-      phone: "+961 ",
+      phone: "",
       status: "active",
     };
   }, [editingUser]);

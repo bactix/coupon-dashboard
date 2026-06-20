@@ -17,17 +17,20 @@ export const userSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  phone: z
-    .string()
-    .min(1, "Phone number is required")
-    .regex(
-      /^\+\d{1,4}\s\d{6,12}$/,
-      "Enter a valid phone number (e.g. +961 03395854)"
-    ),
+  phone: z.string().min(1, "Phone number is required"),
   status: z.enum(["active", "inactive"], { message: "Select a status" }),
+  startDate: z.string().optional(),
 });
 
 export type UserFormValues = z.infer<typeof userSchema>;
+
+export const userEditSchema = userSchema.omit({ password: true });
+export type UserEditFormValues = z.infer<typeof userEditSchema>;
+
+export const changePasswordSchema = z.object({
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
 
 // Business
 export const businessSchema = z
@@ -42,6 +45,12 @@ export const businessSchema = z
       .regex(/^\+961\s?\d[\s\d]{6,9}$/, "Enter a valid Lebanese number (+961 ...)"),
     ownerName: z.string().min(1, "Owner name is required"),
     city: z.enum(LEBANESE_CITIES),
+    address: z.string().min(1, "Address is required"),
+    about: z.string().min(1, "About is required"),
+    discount: z
+      .number({ message: "Discount is required" })
+      .min(0, "Discount must be at least 0")
+      .max(100, "Discount cannot exceed 100"),
     businessModel: z.enum(["unlimited", "limited"] as const),
     usageLimit: z.number().int().min(1, "Must be at least 1").optional(),
   })

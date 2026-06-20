@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -12,15 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserFormValues, userSchema } from "@/lib/schemas";
+import { UserEditFormValues, UserFormValues, userEditSchema, userSchema } from "@/lib/schemas";
 import { USER_FORM_DEFAULTS } from "@/features/users/constants";
 import { FormField } from "@/features/businesses/components/form-field";
 
 interface UserFormProps {
-  onSubmit: (values: UserFormValues) => void;
-  defaultValues?: Partial<UserFormValues>;
+  onSubmit: (values: UserFormValues | UserEditFormValues) => void;
+  defaultValues?: Partial<UserFormValues | UserEditFormValues>;
   isLoading?: boolean;
   submitLabel?: string;
+  isEditing?: boolean;
 }
 
 export function UserForm({
@@ -28,26 +30,28 @@ export function UserForm({
   defaultValues,
   isLoading = false,
   submitLabel = "Save User",
+  isEditing = false,
 }: UserFormProps) {
+  const mergedDefaults = isEditing
+    ? { name: "", email: "", phone: "", status: "active" as const, ...defaultValues }
+    : { name: "", email: "", password: "", phone: USER_FORM_DEFAULTS.phone, status: "active" as const, ...defaultValues };
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
     watch,
-  } = useForm<UserFormValues>({
-    resolver: zodResolver(userSchema),
-    defaultValues: {
-      ...{
-        name: "",
-        email: "",
-        password: "",
-        phone: USER_FORM_DEFAULTS.phone,
-        status: "active",
-      },
-      ...defaultValues,
-    },
+    reset,
+  } = useForm<any>({
+    resolver: zodResolver(isEditing ? userEditSchema : userSchema),
+    defaultValues: mergedDefaults,
   });
+
+  useEffect(() => {
+    reset(mergedDefaults);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const statusValue = watch("status");
   const phoneValue = watch("phone");
@@ -83,20 +87,22 @@ export function UserForm({
         />
       </FormField>
 
-      <FormField
-        id="password"
-        label="Password"
-        error={errors.password}
-        required
-      >
-        <Input
+      {!isEditing && (
+        <FormField
           id="password"
-          type="password"
-          placeholder="Minimum 8 characters"
-          disabled={isLoading}
-          {...register("password")}
-        />
-      </FormField>
+          label="Password"
+          error={errors.password}
+          required
+        >
+          <Input
+            id="password"
+            type="password"
+            placeholder="Minimum 8 characters"
+            disabled={isLoading}
+            {...register("password")}
+          />
+        </FormField>
+      )}
 
       <FormField
         id="phone"
@@ -104,14 +110,24 @@ export function UserForm({
         error={errors.phone}
         required
       >
-        <PhoneInput
-          id="phone"
-          value={phoneValue}
-          onChange={(value) =>
-            setValue("phone", value, { shouldValidate: true, shouldDirty: true })
-          }
-          disabled={isLoading}
-        />
+        {isEditing ? (
+          <Input
+            id="phone"
+            placeholder="Phone number"
+            disabled={isLoading}
+            value={phoneValue}
+            onChange={(e) => setValue("phone", e.target.value, { shouldValidate: true, shouldDirty: true })}
+          />
+        ) : (
+          <PhoneInput
+            id="phone"
+            value={phoneValue}
+            onChange={(value) =>
+              setValue("phone", value, { shouldValidate: true, shouldDirty: true })
+            }
+            disabled={isLoading}
+          />
+        )}
       </FormField>
 
       <FormField
@@ -134,6 +150,21 @@ export function UserForm({
           </SelectContent>
         </Select>
       </FormField>
+
+      {isEditing && (
+        <FormField
+          id="startDate"
+          label="Start Date"
+          error={errors.startDate}
+        >
+          <Input
+            id="startDate"
+            type="date"
+            disabled={isLoading}
+            {...register("startDate")}
+          />
+        </FormField>
+      )}
 
       <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? "Saving..." : submitLabel}

@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+# Committed: these hold only the public NEXT_PUBLIC_API_URL (no secrets) so the
+# correct backend URL is baked in per environment at build/deploy time.
+!.env.development
+!.env.production
 
 # vercel
 .vercel

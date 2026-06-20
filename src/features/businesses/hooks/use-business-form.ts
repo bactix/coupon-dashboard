@@ -46,6 +46,9 @@ export function useBusinessForm({ onSubmit }: UseBusinessFormProps) {
         phone: editingBusiness.phone,
         ownerName: editingBusiness.ownerName,
         city: editingBusiness.city,
+        address: editingBusiness.address,
+        about: editingBusiness.about,
+        discount: editingBusiness.discount,
         businessModel: editingBusiness.businessModel,
         usageLimit: editingBusiness.usageLimit,
       };
@@ -59,6 +62,9 @@ export function useBusinessForm({ onSubmit }: UseBusinessFormProps) {
       phone: BUSINESS_FORM_DEFAULTS.phone,
       ownerName: "",
       city: BUSINESS_FORM_DEFAULTS.city,
+      address: "",
+      about: "",
+      discount: 0,
       businessModel: BUSINESS_FORM_DEFAULTS.businessModel,
       usageLimit: undefined,
     };

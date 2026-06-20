@@ -6,18 +6,38 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/features/businesses/components/form-field";
 import { useAccount } from "@/features/account/hooks/use-account";
 
-const accountSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const accountSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().min(1, "Phone number is required"),
+    // Password is optional — leave blank to keep the current one.
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password && data.password.length > 0) {
+      if (data.password.length < 8) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Password must be at least 8 characters",
+          path: ["password"],
+        });
+      }
+      if (data.password !== data.confirmPassword) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Passwords don't match",
+          path: ["confirmPassword"],
+        });
+      }
+    }
+  });
 
 type AccountFormValues = z.infer<typeof accountSchema>;
 
@@ -30,18 +50,30 @@ export function AccountForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch,
   } = useForm<AccountFormValues>({
     resolver: zodResolver(accountSchema),
     defaultValues: {
+      name: currentUser?.name || "",
       email: currentUser?.email || "",
+      phone: currentUser?.phone || "",
       password: "",
       confirmPassword: "",
     },
   });
 
+  const phoneValue = watch("phone");
+
   function onSubmit(values: AccountFormValues) {
-    updateAccount(values.email, values.password);
-    reset();
+    updateAccount({
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      password: values.password || undefined,
+    });
+    // Keep the profile fields, only clear the password inputs.
+    reset({ ...values, password: "", confirmPassword: "" });
   }
 
   if (!currentUser) {
@@ -77,6 +109,20 @@ export function AccountForm() {
           )}
 
           <FormField
+            id="name"
+            label="Full Name"
+            error={errors.name}
+            required
+          >
+            <Input
+              id="name"
+              placeholder="Your name"
+              disabled={isLoading}
+              {...register("name")}
+            />
+          </FormField>
+
+          <FormField
             id="email"
             label="Email Address"
             error={errors.email}
@@ -91,14 +137,32 @@ export function AccountForm() {
             />
           </FormField>
 
+          <FormField
+            id="phone"
+            label="Phone Number"
+            error={errors.phone}
+            required
+          >
+            <PhoneInput
+              id="phone"
+              value={phoneValue}
+              onChange={(value) =>
+                setValue("phone", value, { shouldValidate: true, shouldDirty: true })
+              }
+              disabled={isLoading}
+            />
+          </FormField>
+
           <div className="space-y-4">
             <h3 className="font-semibold">Change Password</h3>
+            <p className="text-sm text-muted-foreground">
+              Leave blank to keep your current password.
+            </p>
 
             <FormField
               id="password"
               label="New Password"
               error={errors.password}
-              required
             >
               <Input
                 id="password"
@@ -113,7 +177,6 @@ export function AccountForm() {
               id="confirmPassword"
               label="Confirm Password"
               error={errors.confirmPassword}
-              required
             >
               <Input
                 id="confirmPassword"

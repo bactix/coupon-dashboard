@@ -20,6 +20,7 @@ interface UserTableProps {
   onEdit: (user: AppUser) => void;
   onDelete: (userId: string) => void;
   onRenew: (user: AppUser) => void;
+  onChangePassword: (user: AppUser) => void;
   currentPage: number;
   totalPages: number;
   totalItems: number;
@@ -35,6 +36,7 @@ export const UserTable = memo(function UserTable({
   onEdit,
   onDelete,
   onRenew,
+  onChangePassword,
   currentPage,
   totalPages,
   totalItems,
@@ -80,6 +82,7 @@ export const UserTable = memo(function UserTable({
                   onEdit={onEdit}
                   onDelete={onDelete}
                   onRenew={onRenew}
+                  onChangePassword={onChangePassword}
                 />
               ))
             )}

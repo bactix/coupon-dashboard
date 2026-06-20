@@ -37,6 +37,7 @@ export const UserFormDialog = memo(function UserFormDialog({
           onSubmit={onSubmit}
           defaultValues={defaultValues}
           submitLabel={isEditing ? "Save Changes" : "Add User"}
+          isEditing={isEditing}
         />
       </DialogContent>
     </Dialog>

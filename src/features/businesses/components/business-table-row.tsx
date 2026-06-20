@@ -35,8 +35,12 @@ export const BusinessTableRow = memo(function BusinessTableRow({
         </Badge>
       </TableCell>
       <TableCell>{business.city}</TableCell>
-      <TableCell className="font-mono text-sm">{business.phone}</TableCell>
+      <TableCell className="text-sm">{business.address}</TableCell>
+      <TableCell className="font-mono text-sm">
+        {business.phone.split(" ").slice(1).join(" ")}
+      </TableCell>
       <TableCell>{business.ownerName}</TableCell>
+      <TableCell className="text-sm">{business.discount}%</TableCell>
       <TableCell className="text-sm capitalize">
         {business.businessModel === "limited"
           ? `Limited (${business.usageLimit} uses)`
