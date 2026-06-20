@@ -1,11 +1,10 @@
 import { ReactNode } from "react";
-import { FieldError } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 
 interface FormFieldProps {
   id: string;
   label: string;
-  error?: FieldError;
+  error?: { message?: string };
   children: ReactNode;
   required?: boolean;
 }

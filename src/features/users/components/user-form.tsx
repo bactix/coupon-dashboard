@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,8 +43,8 @@ export function UserForm({
     setValue,
     watch,
     reset,
-  } = useForm<any>({
-    resolver: zodResolver(isEditing ? userEditSchema : userSchema),
+  } = useForm<UserFormValues>({
+    resolver: zodResolver(isEditing ? userEditSchema : userSchema) as unknown as Resolver<UserFormValues>,
     defaultValues: mergedDefaults,
   });
 
