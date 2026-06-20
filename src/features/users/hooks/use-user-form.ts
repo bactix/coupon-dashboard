@@ -2,10 +2,10 @@
 
 import { useState, useCallback } from "react";
 import { User } from "@/domain/users";
-import { UserFormValues } from "@/lib/schemas";
+import { UserEditFormValues, UserFormValues } from "@/lib/schemas";
 
 interface UseUserFormProps {
-  onSubmit: (values: UserFormValues, isEditing: boolean, id?: string) => Promise<void>;
+  onSubmit: (values: UserFormValues | UserEditFormValues, isEditing: boolean, id?: string) => Promise<void>;
 }
 
 /** Formats an ISO date string as the `YYYY-MM-DD` value an `<input type="date">` expects. */
@@ -35,14 +35,14 @@ export function useUserForm({ onSubmit }: UseUserFormProps) {
   }, []);
 
   const handleFormSubmit = useCallback(
-    async (values: UserFormValues) => {
+    async (values: UserFormValues | UserEditFormValues) => {
       await onSubmit(values, !!editingUser, editingUser?.id);
       closeDialog();
     },
     [editingUser, onSubmit, closeDialog]
   );
 
-  const getDefaultValues = useCallback((): UserFormValues => {
+  const getDefaultValues = useCallback((): UserFormValues | UserEditFormValues => {
     if (editingUser) {
       return {
         name: editingUser.name,

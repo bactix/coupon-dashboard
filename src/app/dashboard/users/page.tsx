@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { useUserManager } from "@/features/users/hooks/useUserManager";
 import { useUserForm } from "@/features/users/hooks/use-user-form";
+import { UserFormValues } from "@/lib/schemas";
 import { User } from "@/domain/users";
 import { UsersPageHeader } from "@/features/users/components/users-page-header";
 import { UserTable } from "@/features/users/components/user-table";
@@ -53,7 +54,7 @@ export default function UsersPage() {
       if (isEdit && id) {
         await updateUser(id, values);
       } else {
-        await addUser(values);
+        await addUser(values as UserFormValues);
       }
     },
   });

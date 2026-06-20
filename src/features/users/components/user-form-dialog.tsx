@@ -8,13 +8,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { UserForm } from "./user-form";
-import { UserFormValues } from "@/lib/schemas";
+import { UserEditFormValues, UserFormValues } from "@/lib/schemas";
 
 interface UserFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: UserFormValues) => void;
-  defaultValues?: Partial<UserFormValues>;
+  onSubmit: (values: UserFormValues | UserEditFormValues) => void;
+  defaultValues?: Partial<UserFormValues | UserEditFormValues>;
   isEditing?: boolean;
 }
 
