@@ -23,8 +23,6 @@ export class CouponService {
 
     if (!input.code?.trim()) errors.push("Coupon code is required");
     if (input.discount <= 0 || input.discount > 100) errors.push("Discount must be 0-100");
-    if (input.maxUsagePerUser < 1) errors.push("Max usage per user must be at least 1");
-
     const expiryDate = new Date(input.expiryDate);
     if (expiryDate <= new Date()) errors.push("Expiry date must be in the future");
 
