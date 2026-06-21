@@ -72,9 +72,9 @@ export default function UsersPage() {
     }
   };
 
-  const handleRenewal = async (expiryDate: string) => {
+  const handleRenewal = async (startDate: string, expiryDate: string) => {
     if (renewalUser) {
-      await renewUser(renewalUser.id, expiryDate);
+      await renewUser(renewalUser.id, expiryDate, startDate);
       setRenewalUser(null);
     }
   };
@@ -138,7 +138,6 @@ export default function UsersPage() {
         onOpenChange={(open) => { if (!open) setRenewalUser(null); }}
         onConfirm={handleRenewal}
         userName={renewalUser?.name}
-        startDate={renewalUser?.startDate}
       />
 
       <UserChangePasswordDialog

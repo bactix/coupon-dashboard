@@ -53,7 +53,7 @@ const couponSchema = z.object({
   discount: z.number().min(0, "Discount must be at least 0").max(100, "Discount cannot exceed 100"),
   description: z.string().min(1, "Description is required"),
   expiryDate: z.string().min(1, "Expiry date is required"),
-  maxUsagePerUser: z.number().min(1, "Max usage must be at least 1"),
+
 });
 
 type CouponFormValues = z.infer<typeof couponSchema>;
@@ -95,7 +95,6 @@ export default function CouponsPage() {
       discount: 10,
       description: "",
       expiryDate: getDefaultExpiryDate(),
-      maxUsagePerUser: 1,
     });
     setDialogOpen(true);
   }
@@ -108,7 +107,6 @@ export default function CouponsPage() {
       discount: c.discount,
       description: c.description,
       expiryDate: c.expiryDate,
-      maxUsagePerUser: c.maxUsagePerUser,
     });
     setDialogOpen(true);
   }
@@ -119,7 +117,6 @@ export default function CouponsPage() {
         await updateCoupon(editing.id, {
           description: values.description,
           expiryDate: values.expiryDate,
-          maxUsagePerUser: values.maxUsagePerUser,
         });
       } else {
         await addCoupon(values);
@@ -186,7 +183,7 @@ export default function CouponsPage() {
               <TableRow>
                 <TableHead>Code</TableHead>
                 <TableHead>Discount</TableHead>
-                <TableHead>Max Uses</TableHead>
+
                 <TableHead>Status</TableHead>
                 <TableHead>Expires</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -195,14 +192,14 @@ export default function CouponsPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-10">
+                  <TableCell colSpan={5} className="text-center py-10">
                     Loading coupons...
                   </TableCell>
                 </TableRow>
               ) : coupons.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={5}
                     className="text-center py-10 text-muted-foreground"
                   >
                     No coupons yet. Click "Add Coupon" to get started.
@@ -217,7 +214,7 @@ export default function CouponsPage() {
                         {c.code}
                       </TableCell>
                       <TableCell>{c.discount}%</TableCell>
-                      <TableCell>{c.maxUsagePerUser}</TableCell>
+
                       <TableCell>
                         <Badge variant={expired ? "destructive" : "default"}>
                           {expired ? "Expired" : "Active"}
@@ -301,20 +298,6 @@ export default function CouponsPage() {
               />
               {errors.discount && (
                 <p className="text-xs text-destructive">{errors.discount.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="maxUsagePerUser">Max Uses Per User</Label>
-              <Input
-                id="maxUsagePerUser"
-                type="number"
-                min={1}
-                step={1}
-                {...register("maxUsagePerUser", { valueAsNumber: true })}
-              />
-              {errors.maxUsagePerUser && (
-                <p className="text-xs text-destructive">{errors.maxUsagePerUser.message}</p>
               )}
             </div>
 

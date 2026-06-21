@@ -114,7 +114,12 @@ async function rawRequest(path: string, options?: RequestInit): Promise<any> {
     throw new ApiError(response.status, message, body);
   }
 
-  return response.json();
+  if (response.status === 204 || response.headers.get("content-length") === "0") {
+    return null;
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 }
 
 export async function apiRequest<T>(

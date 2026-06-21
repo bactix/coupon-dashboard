@@ -5,7 +5,6 @@ export interface Coupon {
   discount: number;
   description: string;
   expiryDate: string;
-  maxUsagePerUser: number;
   totalUsageCount: number;
   createdAt: string;
 }
@@ -16,11 +15,9 @@ export interface CreateCouponInput {
   discount: number;
   description: string;
   expiryDate: string;
-  maxUsagePerUser: number;
 }
 
 export interface UpdateCouponInput {
   description?: string;
   expiryDate?: string;
-  maxUsagePerUser?: number;
 }

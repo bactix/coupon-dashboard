@@ -96,10 +96,12 @@ export function useUserManager(pageSize = 10) {
   );
 
   const renewUser = useCallback(
-    async (id: string, expiryDate?: string) => {
+    async (id: string, expiryDate?: string, startDate?: string) => {
       await (
-        repository as { renew(id: string, expiryDate?: string): Promise<User> }
-      ).renew(id, expiryDate);
+        repository as {
+          renew(id: string, expiryDate?: string, startDate?: string): Promise<User>;
+        }
+      ).renew(id, expiryDate, startDate);
       await fetchPage(currentPageRef.current);
     },
     [repository, fetchPage]

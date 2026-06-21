@@ -15,9 +15,8 @@ import { Input } from "@/components/ui/input";
 interface UserRenewalDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (expiryDate: string) => void;
+  onConfirm: (startDate: string, expiryDate: string) => void;
   userName?: string;
-  startDate?: string;
 }
 
 /** Formats a Date as the `YYYY-MM-DD` value expected by `<input type="date">`. */
@@ -29,10 +28,15 @@ function toDateInputValue(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-/** Default new expiry: one year from the user's start date. */
-function defaultExpiryFromStart(startDate?: string): string {
+/** Default start date: today. */
+function defaultStart(): string {
+  return toDateInputValue(new Date());
+}
+
+/** Default expiry: one year from the given start date (defaults to today). */
+function defaultExpiry(startDate?: string): string {
   const base = startDate ? new Date(startDate) : new Date();
-  if (isNaN(base.getTime())) return toDateInputValue(new Date());
+  if (isNaN(base.getTime())) return "";
   base.setFullYear(base.getFullYear() + 1);
   return toDateInputValue(base);
 }
@@ -42,20 +46,29 @@ export function UserRenewalDialog({
   onOpenChange,
   onConfirm,
   userName,
-  startDate,
 }: UserRenewalDialogProps) {
+  const [startDate, setStartDate] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
 
-  // Reset to the default (start date + 1 year) each time the dialog opens.
+  // Reset to defaults (start = today, expiry = today + 1 year) each time the
+  // dialog opens.
   useEffect(() => {
     if (open) {
-      setExpiryDate(defaultExpiryFromStart(startDate));
+      const start = defaultStart();
+      setStartDate(start);
+      setExpiryDate(defaultExpiry(start));
     }
-  }, [open, startDate]);
+  }, [open]);
+
+  // When the user changes the start date, keep the expiry one year ahead.
+  const handleStartChange = (value: string) => {
+    setStartDate(value);
+    setExpiryDate(defaultExpiry(value));
+  };
 
   const handleConfirm = () => {
-    if (!expiryDate) return;
-    onConfirm(expiryDate);
+    if (!startDate || !expiryDate) return;
+    onConfirm(startDate, expiryDate);
     onOpenChange(false);
   };
 
@@ -73,7 +86,19 @@ export function UserRenewalDialog({
             </p>
           )}
           <div className="space-y-1.5">
-            <Label htmlFor="renewal-expiry-date">New Expiry Date</Label>
+            <Label htmlFor="renewal-start-date">Start Date</Label>
+            <Input
+              id="renewal-start-date"
+              type="date"
+              value={startDate}
+              onChange={(e) => handleStartChange(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Defaults to today.
+            </p>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="renewal-expiry-date">Expiry Date</Label>
             <Input
               id="renewal-expiry-date"
               type="date"
@@ -90,7 +115,7 @@ export function UserRenewalDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={!expiryDate}>
+          <Button onClick={handleConfirm} disabled={!startDate || !expiryDate}>
             Confirm Renewal
           </Button>
         </DialogFooter>
