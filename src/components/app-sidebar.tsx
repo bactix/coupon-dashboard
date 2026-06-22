@@ -39,7 +39,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, []);
 
   const displayUser = currentUser && "name" in currentUser
-    ? { name: currentUser.name, email: currentUser.email, avatar: "" }
+    ? { name: currentUser.name, email: "email" in currentUser ? (currentUser as any).email : "", avatar: "" }
     : { name: "User", email: "", avatar: "" };
 
   return (

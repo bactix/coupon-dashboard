@@ -56,7 +56,7 @@ export function AccountForm() {
     resolver: zodResolver(accountSchema),
     defaultValues: {
       name: currentUser?.name || "",
-      email: currentUser?.email || "",
+      email: (currentUser && "email" in currentUser ? (currentUser as any).email : "") || "",
       phone: currentUser?.phone || "",
       password: "",
       confirmPassword: "",
