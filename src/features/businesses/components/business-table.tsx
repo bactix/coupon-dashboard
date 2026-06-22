@@ -52,7 +52,6 @@ export const BusinessTable = memo(function BusinessTable({
           <TableHeader>
             <TableRow>
               <TableHead>Business Name</TableHead>
-              <TableHead>Email</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>City</TableHead>
               <TableHead>Address</TableHead>
@@ -66,7 +65,7 @@ export const BusinessTable = memo(function BusinessTable({
           <TableBody>
             {businesses.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="text-center py-10">
+                <TableCell colSpan={9} className="text-center py-10">
                   <div className="text-muted-foreground">
                     <p className="font-medium">{BUSINESS_EMPTY_STATE.title}</p>
                     <p className="text-sm">{BUSINESS_EMPTY_STATE.description}</p>

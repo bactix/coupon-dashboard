@@ -30,12 +30,11 @@ export function useBusinessManager() {
 
   const addBusiness = useCallback(
     async (input: CreateBusinessInput) => {
-      const newBusiness = service.createBusiness(input);
-      await repository.create(newBusiness);
+      const newBusiness = await repository.create(input as any);
       setBusinesses((prev) => [newBusiness, ...prev]);
       return newBusiness;
     },
-    [service, repository]
+    [repository]
   );
 
   const updateBusiness = useCallback(

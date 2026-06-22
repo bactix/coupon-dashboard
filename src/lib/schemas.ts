@@ -37,12 +37,10 @@ export const businessSchema = z
   .object({
     name: z.string().min(1, "Business name is required"),
     type: z.enum(BUSINESS_TYPES),
-    email: z.email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     phone: z
       .string()
-      .min(1, "Phone number is required")
-      .regex(/^\+961\s?\d[\s\d]{6,9}$/, "Enter a valid Lebanese number (+961 ...)"),
+      .regex(/^(03|70|71|72|73|76|78|79|81)\d{6}$/, "Must be 8 digits starting with 03, 70–73, 76, 78, 79, or 81"),
     ownerName: z.string().min(1, "Owner name is required"),
     city: z.enum(LEBANESE_CITIES),
     address: z.string().min(1, "Address is required"),

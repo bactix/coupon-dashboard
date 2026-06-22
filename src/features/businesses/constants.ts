@@ -3,12 +3,18 @@ import type { BusinessType } from "@/types/business";
 export const BUSINESS_TYPE_VARIANT: Record<BusinessType, "default" | "secondary" | "outline"> = {
   restaurant: "default",
   hotel: "secondary",
+  spa: "default",
+  "coffee shop": "secondary",
+  activity: "default",
   other: "outline",
 };
 
 export const BUSINESS_TYPE_LABELS: Record<BusinessType, string> = {
   restaurant: "Restaurant",
   hotel: "Hotel",
+  spa: "Spa",
+  "coffee shop": "Coffee Shop",
+  activity: "Activity",
   other: "Other",
 };
 
@@ -18,7 +24,7 @@ export const BUSINESS_EMPTY_STATE = {
 };
 
 export const BUSINESS_FORM_DEFAULTS = {
-  phone: "+961 ",
+  phone: "",
   city: "Beirut" as const,
   type: "restaurant" as const,
   businessModel: "unlimited" as const,

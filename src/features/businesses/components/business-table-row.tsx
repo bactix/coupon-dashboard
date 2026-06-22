@@ -25,7 +25,6 @@ export const BusinessTableRow = memo(function BusinessTableRow({
   return (
     <TableRow>
       <TableCell className="font-medium">{business.name}</TableCell>
-      <TableCell className="text-sm">{business.email}</TableCell>
       <TableCell>
         <Badge
           variant={BUSINESS_TYPE_VARIANT[business.type]}
@@ -36,9 +35,7 @@ export const BusinessTableRow = memo(function BusinessTableRow({
       </TableCell>
       <TableCell>{business.city}</TableCell>
       <TableCell className="text-sm">{business.address}</TableCell>
-      <TableCell className="font-mono text-sm">
-        {business.phone.split(" ").slice(1).join(" ")}
-      </TableCell>
+      <TableCell className="font-mono text-sm">{business.phone}</TableCell>
       <TableCell>{business.ownerName}</TableCell>
       <TableCell className="text-sm">{business.discount}%</TableCell>
       <TableCell className="text-sm capitalize">

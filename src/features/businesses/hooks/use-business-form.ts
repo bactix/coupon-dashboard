@@ -41,7 +41,6 @@ export function useBusinessForm({ onSubmit }: UseBusinessFormProps) {
       return {
         name: editingBusiness.name,
         type: editingBusiness.type,
-        email: editingBusiness.email,
         password: editingBusiness.password,
         phone: editingBusiness.phone,
         ownerName: editingBusiness.ownerName,
@@ -57,7 +56,6 @@ export function useBusinessForm({ onSubmit }: UseBusinessFormProps) {
     return {
       name: "",
       type: BUSINESS_FORM_DEFAULTS.type,
-      email: "",
       password: "",
       phone: BUSINESS_FORM_DEFAULTS.phone,
       ownerName: "",

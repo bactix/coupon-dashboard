@@ -57,7 +57,6 @@ export class BusinessService {
     const errors: string[] = [];
 
     if (!input.name?.trim()) errors.push("Business name is required");
-    if (!input.email?.includes("@")) errors.push("Valid email is required");
     if (input.password?.length < 8) errors.push("Password must be at least 8 characters");
     if (!input.phone?.match(/^\+961\s?\d[\s\d]{6,9}$/))
       errors.push("Valid Lebanese phone number required");

@@ -1,4 +1,4 @@
-export type BusinessType = "restaurant" | "hotel" | "other";
+export type BusinessType = "restaurant" | "hotel" | "spa" | "coffee shop" | "activity" | "other";
 export type BusinessModel = "unlimited" | "limited";
 export type LebanesCity =
   | "Beirut"
@@ -18,7 +18,6 @@ export interface Business {
   id: string;
   name: string;
   type: BusinessType;
-  email: string;
   password: string;
   phone: string;
   ownerName: string;
@@ -34,7 +33,6 @@ export interface Business {
 export interface CreateBusinessInput {
   name: string;
   type: BusinessType;
-  email: string;
   password: string;
   phone: string;
   ownerName: string;
@@ -49,7 +47,6 @@ export interface CreateBusinessInput {
 export interface UpdateBusinessInput {
   name?: string;
   type?: BusinessType;
-  email?: string;
   password?: string;
   phone?: string;
   ownerName?: string;

@@ -18,5 +18,8 @@ export const LEBANESE_CITIES = [
 export const BUSINESS_TYPES = [
   "restaurant",
   "hotel",
+  "spa",
+  "coffee shop",
+  "activity",
   "other",
 ] as const satisfies readonly BusinessType[];

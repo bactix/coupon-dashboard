@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Select,
   SelectContent,
@@ -44,9 +43,8 @@ export function BusinessForm({
       ...{
         name: "",
         type: BUSINESS_FORM_DEFAULTS.type,
-        email: "",
         password: "",
-        phone: BUSINESS_FORM_DEFAULTS.phone,
+        phone: "",
         ownerName: "",
         city: BUSINESS_FORM_DEFAULTS.city,
         address: "",
@@ -60,7 +58,6 @@ export function BusinessForm({
   const typeValue = watch("type");
   const cityValue = watch("city");
   const businessModelValue = watch("businessModel");
-  const phoneValue = watch("phone");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -75,21 +72,6 @@ export function BusinessForm({
           placeholder="e.g. Al-Falamanki"
           disabled={isLoading}
           {...register("name")}
-        />
-      </FormField>
-
-      <FormField
-        id="email"
-        label="Email"
-        error={errors.email}
-        required
-      >
-        <Input
-          id="email"
-          type="email"
-          placeholder="e.g. info@business.lb"
-          disabled={isLoading}
-          {...register("email")}
         />
       </FormField>
 
@@ -176,13 +158,12 @@ export function BusinessForm({
         error={errors.phone}
         required
       >
-        <PhoneInput
+        <Input
           id="phone"
-          value={phoneValue}
-          onChange={(value) =>
-            setValue("phone", value, { shouldValidate: true, shouldDirty: true })
-          }
+          type="tel"
+          placeholder="e.g. 03123456"
           disabled={isLoading}
+          {...register("phone")}
         />
       </FormField>
 
