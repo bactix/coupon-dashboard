@@ -13,6 +13,7 @@ export class BusinessService {
 
     return {
       id: generateId(),
+      status: "inactive" as const,
       ...input,
       usageLimit: input.businessModel === "limited" ? LIMITED_USAGE_LIMIT : undefined,
       createdAt: now.toISOString(),

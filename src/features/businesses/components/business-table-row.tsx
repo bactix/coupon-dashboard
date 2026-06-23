@@ -5,7 +5,7 @@ import { Business } from "@/types/business";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { KeyIcon, PencilIcon, TrashIcon } from "lucide-react";
 import {
   BUSINESS_TYPE_VARIANT,
   BUSINESS_TYPE_LABELS,
@@ -15,12 +15,14 @@ interface BusinessTableRowProps {
   business: Business;
   onEdit: (business: Business) => void;
   onDelete: (businessId: string) => void;
+  onChangePassword: (business: Business) => void;
 }
 
 export const BusinessTableRow = memo(function BusinessTableRow({
   business,
   onEdit,
   onDelete,
+  onChangePassword,
 }: BusinessTableRowProps) {
   return (
     <TableRow>
@@ -43,8 +45,22 @@ export const BusinessTableRow = memo(function BusinessTableRow({
           ? `Limited (${business.usageLimit} uses)`
           : "Unlimited"}
       </TableCell>
+      <TableCell>
+        <Badge variant={business.status === "active" ? "default" : "secondary"}>
+          {business.status === "active" ? "Active" : "Inactive"}
+        </Badge>
+      </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onChangePassword(business)}
+            aria-label={`Change password for ${business.name}`}
+            title={`Change password for ${business.name}`}
+          >
+            <KeyIcon className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"

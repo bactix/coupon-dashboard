@@ -33,33 +33,36 @@ export const changePasswordSchema = z.object({
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
 
 // Business
-export const businessSchema = z
-  .object({
-    name: z.string().min(1, "Business name is required"),
-    type: z.enum(BUSINESS_TYPES),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    phone: z
-      .string()
-      .regex(/^(03|70|71|72|73|76|78|79|81)\d{6}$/, "Must be 8 digits starting with 03, 70–73, 76, 78, 79, or 81"),
-    ownerName: z.string().min(1, "Owner name is required"),
-    city: z.enum(LEBANESE_CITIES),
-    address: z.string().min(1, "Address is required"),
-    about: z.string().min(1, "About is required"),
-    discount: z
-      .number({ message: "Discount is required" })
-      .min(0, "Discount must be at least 0")
-      .max(100, "Discount cannot exceed 100"),
-    businessModel: z.enum(["unlimited", "limited"] as const),
-    usageLimit: z.number().int().min(1, "Must be at least 1").optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.businessModel === "limited" && !data.usageLimit) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Number of uses is required",
-        path: ["usageLimit"],
-      });
-    }
-  });
+const businessBaseObject = z.object({
+  name: z.string().min(1, "Business name is required"),
+  type: z.enum(BUSINESS_TYPES),
+  phone: z
+    .string()
+    .regex(/^(03|70|71|72|73|76|78|79|81)\d{6}$/, "Must be 8 digits starting with 03, 70–73, 76, 78, 79, or 81"),
+  ownerName: z.string().min(1, "Owner name is required"),
+  city: z.enum(LEBANESE_CITIES),
+  address: z.string().min(1, "Address is required"),
+  about: z.string().min(1, "About is required"),
+  discount: z
+    .number({ message: "Discount is required" })
+    .min(0, "Discount must be at least 0")
+    .max(100, "Discount cannot exceed 100"),
+  status: z.enum(["active", "inactive"] as const),
+  businessModel: z.enum(["unlimited", "limited"] as const),
+  usageLimit: z.number().int().min(1, "Must be at least 1").optional(),
+});
+
+const usageLimitRefinement = (data: { businessModel: string; usageLimit?: number }, ctx: z.RefinementCtx) => {
+  if (data.businessModel === "limited" && !data.usageLimit) {
+    ctx.addIssue({ code: "custom", message: "Number of uses is required", path: ["usageLimit"] });
+  }
+};
+
+export const businessSchema = businessBaseObject
+  .extend({ password: z.string().min(8, "Password must be at least 8 characters") })
+  .superRefine(usageLimitRefinement);
 
 export type BusinessFormValues = z.infer<typeof businessSchema>;
+
+export const businessEditSchema = businessBaseObject.superRefine(usageLimitRefinement);
+export type BusinessEditFormValues = z.infer<typeof businessEditSchema>;

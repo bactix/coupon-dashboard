@@ -1,5 +1,6 @@
 export type BusinessType = "restaurant" | "hotel" | "spa" | "coffee shop" | "activity" | "other";
 export type BusinessModel = "unlimited" | "limited";
+export type BusinessStatus = "active" | "inactive";
 export type LebanesCity =
   | "Beirut"
   | "Tripoli"
@@ -25,6 +26,7 @@ export interface Business {
   address: string;
   about: string;
   discount: number;
+  status: BusinessStatus;
   createdAt: string;
   businessModel: BusinessModel;
   usageLimit?: number;
@@ -54,6 +56,7 @@ export interface UpdateBusinessInput {
   address?: string;
   about?: string;
   discount?: number;
+  status?: BusinessStatus;
   businessModel?: BusinessModel;
   usageLimit?: number;
 }

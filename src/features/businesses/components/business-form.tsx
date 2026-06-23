@@ -12,17 +12,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BusinessFormValues, businessSchema } from "@/lib/schemas";
+import { BusinessFormValues, BusinessEditFormValues, businessSchema, businessEditSchema } from "@/lib/schemas";
+import { Resolver } from "react-hook-form";
 import { LIMITED_USAGE_LIMIT } from "@/domain/businesses/business.service";
 import { LEBANESE_CITIES, BUSINESS_TYPES } from "@/lib/constants";
 import { BUSINESS_TYPE_LABELS, BUSINESS_FORM_DEFAULTS } from "@/features/businesses/constants";
 import { FormField } from "./form-field";
 
 interface BusinessFormProps {
-  onSubmit: (values: BusinessFormValues) => void;
-  defaultValues?: Partial<BusinessFormValues>;
+  onSubmit: (values: BusinessFormValues | BusinessEditFormValues) => void;
+  defaultValues?: Partial<BusinessFormValues | BusinessEditFormValues>;
   isLoading?: boolean;
   submitLabel?: string;
+  isEditing?: boolean;
 }
 
 export function BusinessForm({
@@ -30,7 +32,12 @@ export function BusinessForm({
   defaultValues,
   isLoading = false,
   submitLabel = "Save Business",
+  isEditing = false,
 }: BusinessFormProps) {
+  const mergedDefaults = isEditing
+    ? { name: "", type: BUSINESS_FORM_DEFAULTS.type, phone: "", ownerName: "", city: BUSINESS_FORM_DEFAULTS.city, address: "", about: "", discount: 0, status: "inactive" as const, ...defaultValues }
+    : { name: "", type: BUSINESS_FORM_DEFAULTS.type, password: "", phone: "", ownerName: "", city: BUSINESS_FORM_DEFAULTS.city, address: "", about: "", discount: 0, status: "inactive" as const, ...defaultValues };
+
   const {
     register,
     handleSubmit,
@@ -38,26 +45,14 @@ export function BusinessForm({
     watch,
     formState: { errors },
   } = useForm<BusinessFormValues>({
-    resolver: zodResolver(businessSchema),
-    defaultValues: {
-      ...{
-        name: "",
-        type: BUSINESS_FORM_DEFAULTS.type,
-        password: "",
-        phone: "",
-        ownerName: "",
-        city: BUSINESS_FORM_DEFAULTS.city,
-        address: "",
-        about: "",
-        discount: 0,
-      },
-      ...defaultValues,
-    },
+    resolver: zodResolver(isEditing ? businessEditSchema : businessSchema) as unknown as Resolver<BusinessFormValues>,
+    defaultValues: mergedDefaults,
   });
 
   const typeValue = watch("type");
   const cityValue = watch("city");
   const businessModelValue = watch("businessModel");
+  const statusValue = watch("status");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -75,20 +70,22 @@ export function BusinessForm({
         />
       </FormField>
 
-      <FormField
-        id="password"
-        label="Password"
-        error={errors.password}
-        required
-      >
-        <Input
+      {!isEditing && (
+        <FormField
           id="password"
-          type="password"
-          placeholder="Minimum 8 characters"
-          disabled={isLoading}
-          {...register("password")}
-        />
-      </FormField>
+          label="Password"
+          error={errors.password}
+          required
+        >
+          <Input
+            id="password"
+            type="password"
+            placeholder="Minimum 8 characters"
+            disabled={isLoading}
+            {...register("password")}
+          />
+        </FormField>
+      )}
 
       <FormField
         id="type"
@@ -242,6 +239,27 @@ export function BusinessForm({
           <strong>{LIMITED_USAGE_LIMIT} uses</strong>.
         </p>
       )}
+
+      <FormField
+        id="status"
+        label="Status"
+        error={errors.status}
+        required
+      >
+        <Select
+          value={statusValue}
+          onValueChange={(value) => setValue("status", value as "active" | "inactive")}
+          disabled={isLoading}
+        >
+          <SelectTrigger id="status">
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
+      </FormField>
 
       <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? "Saving..." : submitLabel}

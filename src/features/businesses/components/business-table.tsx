@@ -19,6 +19,7 @@ interface BusinessTableProps {
   businesses: Business[];
   onEdit: (business: Business) => void;
   onDelete: (businessId: string) => void;
+  onChangePassword: (business: Business) => void;
   currentPage: number;
   totalPages: number;
   totalItems: number;
@@ -33,6 +34,7 @@ export const BusinessTable = memo(function BusinessTable({
   businesses,
   onEdit,
   onDelete,
+  onChangePassword,
   currentPage,
   totalPages,
   totalItems,
@@ -59,13 +61,14 @@ export const BusinessTable = memo(function BusinessTable({
               <TableHead>Owner</TableHead>
               <TableHead>Discount</TableHead>
               <TableHead>Model</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {businesses.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-10">
+                <TableCell colSpan={10} className="text-center py-10">
                   <div className="text-muted-foreground">
                     <p className="font-medium">{BUSINESS_EMPTY_STATE.title}</p>
                     <p className="text-sm">{BUSINESS_EMPTY_STATE.description}</p>
@@ -79,6 +82,7 @@ export const BusinessTable = memo(function BusinessTable({
                   business={business}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  onChangePassword={onChangePassword}
                 />
               ))
             )}

@@ -293,6 +293,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-01T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz002",
@@ -307,6 +308,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-01T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz003",
@@ -321,6 +323,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-01T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz004",
@@ -335,6 +338,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-01T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz005",
@@ -349,6 +353,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-02T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz006",
@@ -363,6 +368,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-02T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz007",
@@ -377,6 +383,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-03T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz008",
@@ -391,6 +398,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-03T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz009",
@@ -405,6 +413,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-04T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz010",
@@ -419,6 +428,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-04T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz011",
@@ -433,6 +443,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-05T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz012",
@@ -447,6 +458,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-05T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz013",
@@ -461,6 +473,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-06T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz014",
@@ -475,6 +488,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-06T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz015",
@@ -489,6 +503,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-07T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz016",
@@ -503,6 +518,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-07T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz017",
@@ -517,6 +533,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-08T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz018",
@@ -531,6 +548,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-08T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz019",
@@ -545,6 +563,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-09T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz020",
@@ -559,6 +578,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-09T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz021",
@@ -573,6 +593,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-10T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz022",
@@ -587,6 +608,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-10T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz023",
@@ -601,6 +623,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-11T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz024",
@@ -615,6 +638,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-11T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz025",
@@ -629,6 +653,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-12T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
   {
     id: "biz026",
@@ -643,6 +668,7 @@ export const SEED_BUSINESSES: Business[] = [
     discount: 15,
     createdAt: "2024-01-12T00:00:00Z",
     businessModel: "unlimited",
+    status: "inactive",
   },
 ];
 

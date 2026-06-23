@@ -8,13 +8,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BusinessForm } from "./business-form";
-import { BusinessFormValues } from "@/lib/schemas";
+import { BusinessFormValues, BusinessEditFormValues } from "@/lib/schemas";
 
 interface BusinessFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: BusinessFormValues) => void;
-  defaultValues?: Partial<BusinessFormValues>;
+  onSubmit: (values: BusinessFormValues | BusinessEditFormValues) => void;
+  defaultValues?: Partial<BusinessFormValues | BusinessEditFormValues>;
   isEditing?: boolean;
 }
 
@@ -37,6 +37,7 @@ export const BusinessFormDialog = memo(function BusinessFormDialog({
           onSubmit={onSubmit}
           defaultValues={defaultValues}
           submitLabel={isEditing ? "Save Changes" : "Add Business"}
+          isEditing={isEditing}
         />
       </DialogContent>
     </Dialog>

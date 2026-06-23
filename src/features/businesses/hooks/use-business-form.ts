@@ -2,11 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { Business } from "@/domain/businesses";
-import { BusinessFormValues } from "@/lib/schemas";
+import { BusinessFormValues, BusinessEditFormValues } from "@/lib/schemas";
 import { BUSINESS_FORM_DEFAULTS } from "@/features/businesses/constants";
 
 interface UseBusinessFormProps {
-  onSubmit: (values: BusinessFormValues, isEditing: boolean, id?: string) => Promise<void>;
+  onSubmit: (values: BusinessFormValues | BusinessEditFormValues, isEditing: boolean, id?: string) => Promise<void>;
 }
 
 export function useBusinessForm({ onSubmit }: UseBusinessFormProps) {
@@ -29,25 +29,25 @@ export function useBusinessForm({ onSubmit }: UseBusinessFormProps) {
   }, []);
 
   const handleFormSubmit = useCallback(
-    async (values: BusinessFormValues) => {
+    async (values: BusinessFormValues | BusinessEditFormValues) => {
       await onSubmit(values, !!editingBusiness, editingBusiness?.id);
       closeDialog();
     },
     [editingBusiness, onSubmit, closeDialog]
   );
 
-  const getDefaultValues = useCallback((): BusinessFormValues => {
+  const getDefaultValues = useCallback((): BusinessFormValues | BusinessEditFormValues => {
     if (editingBusiness) {
       return {
         name: editingBusiness.name,
         type: editingBusiness.type,
-        password: editingBusiness.password,
         phone: editingBusiness.phone,
         ownerName: editingBusiness.ownerName,
         city: editingBusiness.city,
         address: editingBusiness.address,
         about: editingBusiness.about,
         discount: editingBusiness.discount,
+        status: editingBusiness.status,
         businessModel: editingBusiness.businessModel,
         usageLimit: editingBusiness.usageLimit,
       };
@@ -57,12 +57,13 @@ export function useBusinessForm({ onSubmit }: UseBusinessFormProps) {
       name: "",
       type: BUSINESS_FORM_DEFAULTS.type,
       password: "",
-      phone: BUSINESS_FORM_DEFAULTS.phone,
+      phone: "",
       ownerName: "",
       city: BUSINESS_FORM_DEFAULTS.city,
       address: "",
       about: "",
       discount: 0,
+      status: "inactive" as const,
       businessModel: BUSINESS_FORM_DEFAULTS.businessModel,
       usageLimit: undefined,
     };

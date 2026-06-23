@@ -9,6 +9,8 @@ import { BusinessesPageHeader } from "@/features/businesses/components/businesse
 import { BusinessTable } from "@/features/businesses/components/business-table";
 import { BusinessFormDialog } from "@/features/businesses/components/business-form-dialog";
 import { BusinessDeleteDialog } from "@/features/businesses/components/business-delete-dialog";
+import { BusinessChangePasswordDialog } from "@/features/businesses/components/business-change-password-dialog";
+import { Business } from "@/domain/businesses/business.types";
 
 export default function BusinessesPage() {
   const {
@@ -41,7 +43,7 @@ export default function BusinessesPage() {
       if (isEdit && id) {
         await updateBusiness(id, values);
       } else {
-        await addBusiness(values);
+        await addBusiness(values as any);
       }
     },
   });
@@ -50,6 +52,15 @@ export default function BusinessesPage() {
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const deletingBusiness = deleteId ? getBusinessById(deleteId) : null;
+
+  const [changePasswordBusiness, setChangePasswordBusiness] = useState<Business | null>(null);
+
+  const handleChangePassword = async (password: string) => {
+    if (changePasswordBusiness) {
+      await updateBusiness(changePasswordBusiness.id, { password });
+      setChangePasswordBusiness(null);
+    }
+  };
 
   const handleDelete = async () => {
     if (deleteId) {
@@ -75,6 +86,7 @@ export default function BusinessesPage() {
             businesses={pagination.paginatedItems}
             onEdit={openEditDialog}
             onDelete={setDeleteId}
+            onChangePassword={setChangePasswordBusiness}
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
             totalItems={pagination.totalItems}
@@ -93,6 +105,13 @@ export default function BusinessesPage() {
         onSubmit={handleFormSubmit}
         defaultValues={getDefaultValues()}
         isEditing={isEditing}
+      />
+
+      <BusinessChangePasswordDialog
+        open={!!changePasswordBusiness}
+        onOpenChange={(open) => { if (!open) setChangePasswordBusiness(null); }}
+        onConfirm={handleChangePassword}
+        businessName={changePasswordBusiness?.name}
       />
 
       <BusinessDeleteDialog
