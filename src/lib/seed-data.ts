@@ -478,7 +478,7 @@ export const SEED_BUSINESSES: Business[] = [
   {
     id: "biz014",
     name: "Beirut Sky Lounge",
-    type: "other",
+    type: "activities",
     password: "Password123",
     phone: "+961 78 343 454",
     ownerName: "Tony Khoury",
@@ -493,7 +493,7 @@ export const SEED_BUSINESSES: Business[] = [
   {
     id: "biz015",
     name: "Tripoli Sweets Shop",
-    type: "other",
+    type: "shop",
     password: "Password123",
     phone: "+961 71 565 676",
     ownerName: "Ahmad Mrad",
@@ -538,7 +538,7 @@ export const SEED_BUSINESSES: Business[] = [
   {
     id: "biz018",
     name: "Jounieh Casino Café",
-    type: "other",
+    type: "coffee shop",
     password: "Password123",
     phone: "+961 71 131 242",
     ownerName: "Elias Gemayel",
@@ -598,7 +598,7 @@ export const SEED_BUSINESSES: Business[] = [
   {
     id: "biz022",
     name: "Tyre Roman Café",
-    type: "other",
+    type: "coffee shop",
     password: "Password123",
     phone: "+961 76 919 020",
     ownerName: "Mazen Ataya",
@@ -643,7 +643,7 @@ export const SEED_BUSINESSES: Business[] = [
   {
     id: "biz025",
     name: "Beirut Art Space",
-    type: "other",
+    type: "activities",
     password: "Password123",
     phone: "+961 76 585 696",
     ownerName: "Lina Saneh",
