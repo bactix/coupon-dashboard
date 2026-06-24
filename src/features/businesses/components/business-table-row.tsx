@@ -5,7 +5,7 @@ import { Business } from "@/types/business";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { KeyIcon, PencilIcon, TrashIcon } from "lucide-react";
+import { ImageIcon, KeyIcon, PencilIcon, TrashIcon } from "lucide-react";
 import {
   BUSINESS_TYPE_VARIANT,
   BUSINESS_TYPE_LABELS,
@@ -16,6 +16,7 @@ interface BusinessTableRowProps {
   onEdit: (business: Business) => void;
   onDelete: (businessId: string) => void;
   onChangePassword: (business: Business) => void;
+  onEditImages: (business: Business) => void;
 }
 
 export const BusinessTableRow = memo(function BusinessTableRow({
@@ -23,6 +24,7 @@ export const BusinessTableRow = memo(function BusinessTableRow({
   onEdit,
   onDelete,
   onChangePassword,
+  onEditImages,
 }: BusinessTableRowProps) {
   return (
     <TableRow>
@@ -52,6 +54,15 @@ export const BusinessTableRow = memo(function BusinessTableRow({
       </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onEditImages(business)}
+            aria-label={`Edit images for ${business.name}`}
+            title={`Edit images for ${business.name}`}
+          >
+            <ImageIcon className="h-4 w-4" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"

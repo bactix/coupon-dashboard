@@ -74,6 +74,31 @@ export interface PaginatedResult<T> {
   pagination: Pagination;
 }
 
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const url = new URL(path, API_URL).toString();
+  const token = getToken();
+
+  const headers: HeadersInit = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const response = await fetch(url, { method: "POST", body: formData, headers });
+
+  if (!response.ok) {
+    let body;
+    try { body = await response.json(); } catch { body = null; }
+    if ((response.status === 401 || response.status === 403) && token && typeof window !== "undefined") {
+      clearToken();
+      localStorage.removeItem("currentUser");
+      window.location.href = "/login";
+    }
+    throw new ApiError(response.status, body?.error || response.statusText, body);
+  }
+
+  const json = await response.json();
+  if (json && typeof json === "object" && json.data !== undefined) return json.data;
+  return json;
+}
+
 async function rawRequest(path: string, options?: RequestInit): Promise<any> {
   const url = new URL(path, API_URL).toString();
   const token = getToken();

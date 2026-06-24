@@ -1,4 +1,4 @@
-export type BusinessType = "restaurant" | "hotel" | "spa" | "coffee shop" | "activity" | "other";
+export type BusinessType = "restaurant" | "hotel" | "spa" | "coffee shop" | "shop" | "activities";
 export type BusinessModel = "unlimited" | "limited";
 export type BusinessStatus = "active" | "inactive";
 export type LebanesCity =
@@ -30,6 +30,8 @@ export interface Business {
   createdAt: string;
   businessModel: BusinessModel;
   usageLimit?: number;
+  profilePicture?: string;
+  gallery?: string[];
 }
 
 export interface CreateBusinessInput {

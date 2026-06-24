@@ -57,6 +57,30 @@ export function useBusinessManager() {
     [repository]
   );
 
+  const uploadProfilePicture = useCallback(
+    async (id: string, file: File) => {
+      const updated = await repository.uploadProfilePicture(id, file);
+      setBusinesses((prev) => prev.map((b) => (b.id === id ? updated : b)));
+    },
+    [repository]
+  );
+
+  const uploadGallery = useCallback(
+    async (id: string, files: File[]) => {
+      const updated = await repository.uploadGallery(id, files);
+      setBusinesses((prev) => prev.map((b) => (b.id === id ? updated : b)));
+    },
+    [repository]
+  );
+
+  const removeGalleryImage = useCallback(
+    async (id: string, index: number) => {
+      const updated = await repository.removeGalleryImage(id, index);
+      setBusinesses((prev) => prev.map((b) => (b.id === id ? updated : b)));
+    },
+    [repository]
+  );
+
   const getBusinessById = useCallback(
     (id: string) => businesses.find((b) => b.id === id),
     [businesses]
@@ -70,5 +94,8 @@ export function useBusinessManager() {
     updateBusiness,
     deleteBusiness,
     getBusinessById,
+    uploadProfilePicture,
+    uploadGallery,
+    removeGalleryImage,
   };
 }

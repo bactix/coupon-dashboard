@@ -20,6 +20,6 @@ export const BUSINESS_TYPES = [
   "hotel",
   "spa",
   "coffee shop",
-  "activity",
-  "other",
+  "shop",
+  "activities",
 ] as const satisfies readonly BusinessType[];

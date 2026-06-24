@@ -10,6 +10,7 @@ import { BusinessTable } from "@/features/businesses/components/business-table";
 import { BusinessFormDialog } from "@/features/businesses/components/business-form-dialog";
 import { BusinessDeleteDialog } from "@/features/businesses/components/business-delete-dialog";
 import { BusinessChangePasswordDialog } from "@/features/businesses/components/business-change-password-dialog";
+import { BusinessImagesDialog } from "@/features/businesses/components/business-images-dialog";
 import { Business } from "@/domain/businesses/business.types";
 
 export default function BusinessesPage() {
@@ -20,7 +21,10 @@ export default function BusinessesPage() {
     updateBusiness,
     deleteBusiness,
     getBusinessById,
-    initializeBusinesses
+    initializeBusinesses,
+    uploadProfilePicture,
+    uploadGallery,
+    removeGalleryImage,
   } = useBusinessManager();
 
   useEffect(() => {
@@ -54,6 +58,7 @@ export default function BusinessesPage() {
   const deletingBusiness = deleteId ? getBusinessById(deleteId) : null;
 
   const [changePasswordBusiness, setChangePasswordBusiness] = useState<Business | null>(null);
+  const [imagesBusiness, setImagesBusiness] = useState<Business | null>(null);
 
   const handleChangePassword = async (password: string) => {
     if (changePasswordBusiness) {
@@ -87,6 +92,7 @@ export default function BusinessesPage() {
             onEdit={openEditDialog}
             onDelete={setDeleteId}
             onChangePassword={setChangePasswordBusiness}
+            onEditImages={(b) => setImagesBusiness(businesses.find((x) => x.id === b.id) ?? b)}
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
             totalItems={pagination.totalItems}
@@ -119,6 +125,15 @@ export default function BusinessesPage() {
         onOpenChange={() => setDeleteId(null)}
         onConfirm={handleDelete}
         businessName={deletingBusiness?.name}
+      />
+
+      <BusinessImagesDialog
+        open={!!imagesBusiness}
+        onOpenChange={(open) => { if (!open) setImagesBusiness(null); }}
+        business={imagesBusiness ? (businesses.find((b) => b.id === imagesBusiness.id) ?? imagesBusiness) : null}
+        onUploadProfilePicture={uploadProfilePicture}
+        onUploadGallery={uploadGallery}
+        onRemoveGalleryImage={removeGalleryImage}
       />
     </SidebarInset>
   );

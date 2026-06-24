@@ -20,6 +20,7 @@ interface BusinessTableProps {
   onEdit: (business: Business) => void;
   onDelete: (businessId: string) => void;
   onChangePassword: (business: Business) => void;
+  onEditImages: (business: Business) => void;
   currentPage: number;
   totalPages: number;
   totalItems: number;
@@ -35,6 +36,7 @@ export const BusinessTable = memo(function BusinessTable({
   onEdit,
   onDelete,
   onChangePassword,
+  onEditImages,
   currentPage,
   totalPages,
   totalItems,
@@ -83,6 +85,7 @@ export const BusinessTable = memo(function BusinessTable({
                   onEdit={onEdit}
                   onDelete={onDelete}
                   onChangePassword={onChangePassword}
+                  onEditImages={onEditImages}
                 />
               ))
             )}
