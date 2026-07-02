@@ -7,6 +7,8 @@ export const BUSINESS_TYPE_VARIANT: Record<BusinessType, "default" | "secondary"
   "coffee shop": "secondary",
   shop: "default",
   activities: "outline",
+  "online store": "secondary",
+  gym: "outline",
 };
 
 export const BUSINESS_TYPE_LABELS: Record<BusinessType, string> = {
@@ -16,6 +18,8 @@ export const BUSINESS_TYPE_LABELS: Record<BusinessType, string> = {
   "coffee shop": "Coffee Shop",
   shop: "Shop",
   activities: "Activities",
+  "online store": "Online Store",
+  gym: "Gym",
 };
 
 export const BUSINESS_EMPTY_STATE = {
