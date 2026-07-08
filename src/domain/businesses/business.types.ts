@@ -13,7 +13,9 @@ export type LebanesCity =
   | "Byblos"
   | "Aley"
   | "Chouf"
-  | "Bint Jbeil";
+  | "Bint Jbeil"
+  | "Koura"
+  | "Batroun";
 
 export interface Business {
   id: string;

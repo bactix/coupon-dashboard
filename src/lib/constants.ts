@@ -13,6 +13,8 @@ export const LEBANESE_CITIES = [
   "Aley",
   "Chouf",
   "Bint Jbeil",
+  "Koura",
+  "Batroun",
 ] as const satisfies readonly LebanesCity[];
 
 export const BUSINESS_TYPES = [
