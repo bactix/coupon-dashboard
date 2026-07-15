@@ -1,5 +1,7 @@
 import { Business } from "@/types/business";
-import { apiRequest, apiUpload } from "@/lib/api-client";
+import { apiRequest, apiRequestPaginated, apiUpload } from "@/lib/api-client";
+
+const MAX_PAGE_SIZE = 100;
 
 export interface IBusinessRepository {
   getAll(): Promise<Business[]>;
@@ -14,7 +16,22 @@ export interface IBusinessRepository {
 
 export class ApiBusinessRepository implements IBusinessRepository {
   async getAll(): Promise<Business[]> {
-    return apiRequest<Business[]>("/api/dashboard/businesses");
+    // The backend paginates this endpoint (default limit 20), so a plain
+    // request only returns the first page. Walk every page to get the
+    // full list, since the dashboard paginates client-side instead.
+    const first = await apiRequestPaginated<Business>(
+      `/api/dashboard/businesses?limit=${MAX_PAGE_SIZE}`
+    );
+    const businesses = [...first.data];
+
+    for (let page = 2; page <= first.pagination.pages; page++) {
+      const next = await apiRequestPaginated<Business>(
+        `/api/dashboard/businesses?page=${page}&limit=${MAX_PAGE_SIZE}`
+      );
+      businesses.push(...next.data);
+    }
+
+    return businesses;
   }
 
   async getById(id: string): Promise<Business> {
